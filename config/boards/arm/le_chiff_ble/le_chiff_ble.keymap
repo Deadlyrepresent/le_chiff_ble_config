@@ -2,8 +2,6 @@
  * Le Chiffre BLE (MangoIV) – Michel QWERTZ Developer Layout v1
  *
  * Annahme: Betriebssystem steht auf Deutsch/QWERTZ.
- * Dadurch werden einige Zeichen bewusst über die deutsche Tastenposition erzeugt
- * (z. B. Z = HID Y, Y = HID Z, Ö = SEMI, Ä = SQT, Ü = LBKT).
  */
 
 #include <behaviors.dtsi>
@@ -17,11 +15,6 @@
 #define CODE 3
 #define FUN  4
 
-/*
- * Globales Feintuning:
- * - quick_tap_ms sorgt dafür, dass tap -> tap-and-hold wiederholt.
- *   Wichtig z. B. für Delete/Backspace trotz Layer-Tap.
- */
 &lt {
     tapping-term-ms = <200>;
     quick-tap-ms = <200>;
@@ -34,9 +27,8 @@
 
 / {
     behaviors {
-        /* Shift + Backspace = Delete.
-         * Standardmäßig werden die Shift-Mods nicht mitgesendet, damit nicht
-         * Shift+Delete/Ausschneiden daraus wird.
+        /*
+         * Shift + Backspace = Delete.
          */
         bspc_del: backspace_delete {
             compatible = "zmk,behavior-mod-morph";
@@ -45,9 +37,10 @@
             mods = <(MOD_LSFT|MOD_RSFT)>;
         };
 
-        /* Rechter äußerer Thumb: Tap = Backspace/Shift-Backspace-Morph,
-         * Hold = FUN-Layer. Dummy-Parameter 0 ist nötig, weil bspc_del
-         * selbst keine Parameter nimmt.
+        /*
+         * Rechter äußerer Thumb:
+         * Tap  = Backspace / Shift+Backspace => Delete
+         * Hold = FUN / MEDIA
          */
         fun_bspc: fun_backspace {
             compatible = "zmk,behavior-hold-tap";
@@ -58,8 +51,8 @@
             bindings = <&mo>, <&bspc_del>;
         };
 
-        /* Home-Row-Mods links: A/S/D/F halten = GUI/Alt/Ctrl/Shift.
-         * Positional Hold-Tap: linke Mods triggern bevorzugt mit rechter Hand.
+        /*
+         * Home-Row-Mods links.
          */
         hml: home_row_mod_left {
             compatible = "zmk,behavior-hold-tap";
@@ -73,8 +66,8 @@
             hold-trigger-on-release;
         };
 
-        /* Home-Row-Mods rechts: J/K/L/Ö halten = Shift/Ctrl/AltGr/GUI.
-         * Rechte Mods triggern bevorzugt mit linker Hand.
+        /*
+         * Home-Row-Mods rechts.
          */
         hmr: home_row_mod_right {
             compatible = "zmk,behavior-hold-tap";
@@ -88,9 +81,10 @@
             hold-trigger-on-release;
         };
 
-        /* Optional: schreibt () und setzt den Cursor in die Mitte.
-         * Noch nicht fest auf eine Taste gelegt, damit Version 1 übersichtlich bleibt.
-         * Wenn du willst, legen wir das später auf eine Combo oder CODE-Taste.
+        /*
+         * Optionales Makro:
+         * Schreibt () und setzt den Cursor in die Mitte.
+         * Noch nicht auf eine Taste gelegt.
          */
         parens: parens_with_cursor_inside {
             compatible = "zmk,behavior-macro";
@@ -102,7 +96,9 @@
     combos {
         compatible = "zmk,combos";
 
-        /* Daumentasten zusammen = Tab */
+        /*
+         * Delete + Space = Tab
+         */
         combo_tab {
             timeout-ms = <60>;
             key-positions = <31 32>;
@@ -110,29 +106,39 @@
             layers = <BASE>;
         };
 
-        /* Umlaute/ß als Combos auf Base */
+        /*
+         * A + S = Ä
+         */
         combo_ae {
             timeout-ms = <60>;
-            key-positions = <10 11>; /* A + S */
-            bindings = <&kp SQT>;    /* Ä/ä auf deutschem Layout */
+            key-positions = <10 11>;
+            bindings = <&kp SQT>;
             layers = <BASE>;
         };
 
+        /*
+         * U + I = Ü
+         */
         combo_ue {
             timeout-ms = <60>;
-            key-positions = <6 7>;  /* U + I */
-            bindings = <&kp LBKT>;  /* Ü/ü auf deutschem Layout */
+            key-positions = <6 7>;
+            bindings = <&kp LBKT>;
             layers = <BASE>;
         };
 
+        /*
+         * S + D = ß
+         */
         combo_sz {
             timeout-ms = <60>;
-            key-positions = <11 12>; /* S + D */
-            bindings = <&kp MINUS>;  /* ß auf deutschem Layout */
+            key-positions = <11 12>;
+            bindings = <&kp MINUS>;
             layers = <BASE>;
         };
 
-        /* F + J = Space */
+        /*
+         * F + J = Space
+         */
         combo_space_fj {
             timeout-ms = <60>;
             key-positions = <13 16>;
@@ -162,12 +168,13 @@
 
         nav {
             label = "NAV";
-//  Space halten. Navigation liegt rechts.
+//  Space halten. Miryoku-artiger Editier-/Navigationslayer.
+//  Links: Esc/CapsW/Caps. Rechts: Clipboard, Pfeile, Home/End/Page.
             bindings = <
-                &none          &none          &none          &none          &none             &kp HOME       &kp PG_DN      &kp PG_UP      &kp END        &kp ESC
-                &none          &none          &none          &none          &none             &kp LEFT       &kp DOWN       &kp UP         &kp RIGHT      &kp RET
-                &none          &none          &none          &none          &none   &none     &bspc_del      &kp DEL        &kp TAB        &none          &none
-                                &trans         &trans                           &trans         &trans
+                &kp ESC        &none          &none          &none          &caps_word        &kp C_Y        &kp C_V        &kp C_C        &kp C_X        &kp C_Z
+                &none          &none          &none          &none          &kp CAPS          &kp MINUS      &kp LEFT       &kp DOWN       &kp UP         &kp RIGHT
+                &none          &none          &none          &none          &none   &none     &kp INS        &kp HOME       &kp PG_DN      &kp PG_UP      &kp END
+                                &trans         &trans                           &kp RET        &bspc_del
             >;
             sensor-bindings = <&inc_dec_kp PG_UP PG_DN>;
         };
