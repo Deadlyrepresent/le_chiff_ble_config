@@ -1,5 +1,5 @@
 /*
- * Le Chiffre BLE (MangoIV) – Michel QWERTZ Developer Layout v1
+ * Le Chiffre BLE (MangoIV) – Michel QWERTZ Developer Layout v1.1
  *
  * Annahme: Betriebssystem steht auf Deutsch/QWERTZ.
  */
@@ -16,20 +16,31 @@
 #define CODE 3
 #define FUN  4
 
+/*
+ * Layer-Tap:
+ * - Tap = Taste
+ * - Hold = Layer
+ * - quick-tap-ms sorgt dafür, dass tap -> hold als Wiederholung funktioniert.
+ */
 &lt {
     tapping-term-ms = <200>;
-    quick-tap-ms = <200>;
+    quick-tap-ms = <150>;
 };
 
+/*
+ * Normale Mod-Taps.
+ */
 &mt {
-    tapping-term-ms = <220>;
-    quick-tap-ms = <175>;
+    tapping-term-ms = <200>;
+    quick-tap-ms = <150>;
 };
 
 / {
     behaviors {
         /*
          * Shift + Backspace = Delete.
+         * Wichtig: Shift wird dabei nicht mitgesendet,
+         * damit nicht Shift+Delete/Ausschneiden daraus wird.
          */
         bspc_del: backspace_delete {
             compatible = "zmk,behavior-mod-morph";
@@ -42,18 +53,29 @@
          * Rechter äußerer Thumb:
          * Tap  = Backspace / Shift+Backspace => Delete
          * Hold = FUN / MEDIA
+         *
+         * quick-tap-ms erlaubt:
+         * Backspace tippen, direkt nochmal halten = mehrfach löschen.
          */
         fun_bspc: fun_backspace {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
             tapping-term-ms = <200>;
-            quick-tap-ms = <200>;
+            quick-tap-ms = <150>;
             bindings = <&mo>, <&bspc_del>;
         };
 
         /*
          * Home-Row-Mods links.
+         *
+         * Community-/Doku-nahes Preset:
+         * - balanced
+         * - tapping-term-ms 280
+         * - quick-tap-ms 175
+         * - require-prior-idle-ms 150
+         * - positional hold-taps
+         * - hold-trigger-on-release
          */
         hml: home_row_mod_left {
             compatible = "zmk,behavior-hold-tap";
@@ -61,7 +83,7 @@
             flavor = "balanced";
             tapping-term-ms = <280>;
             quick-tap-ms = <175>;
-            require-prior-idle-ms = <125>;
+            require-prior-idle-ms = <150>;
             bindings = <&kp>, <&kp>;
             hold-trigger-key-positions = <5 6 7 8 9 15 16 17 18 19 26 27 28 29 30 33 34>;
             hold-trigger-on-release;
@@ -76,7 +98,7 @@
             flavor = "balanced";
             tapping-term-ms = <280>;
             quick-tap-ms = <175>;
-            require-prior-idle-ms = <125>;
+            require-prior-idle-ms = <150>;
             bindings = <&kp>, <&kp>;
             hold-trigger-key-positions = <0 1 2 3 4 10 11 12 13 14 20 21 22 23 24 31 32>;
             hold-trigger-on-release;
@@ -85,7 +107,7 @@
         /*
          * Optionales Makro:
          * Schreibt () und setzt den Cursor in die Mitte.
-         * Noch nicht auf eine Taste gelegt.
+         * Aktuell noch nicht auf eine Taste gelegt.
          */
         parens: parens_with_cursor_inside {
             compatible = "zmk,behavior-macro";
@@ -99,6 +121,8 @@
 
         /*
          * Delete + Space = Tab
+         *
+         * Keine require-prior-idle-ms hier, weil das eine bewusste Thumb-Combo ist.
          */
         combo_tab {
             timeout-ms = <60>;
@@ -112,6 +136,7 @@
          */
         combo_ae {
             timeout-ms = <60>;
+            require-prior-idle-ms = <150>;
             key-positions = <10 11>;
             bindings = <&kp SQT>;
             layers = <BASE>;
@@ -122,6 +147,7 @@
          */
         combo_ue {
             timeout-ms = <60>;
+            require-prior-idle-ms = <150>;
             key-positions = <6 7>;
             bindings = <&kp LBKT>;
             layers = <BASE>;
@@ -132,6 +158,7 @@
          */
         combo_sz {
             timeout-ms = <60>;
+            require-prior-idle-ms = <150>;
             key-positions = <11 12>;
             bindings = <&kp MINUS>;
             layers = <BASE>;
@@ -142,6 +169,7 @@
          */
         combo_space_fj {
             timeout-ms = <60>;
+            require-prior-idle-ms = <150>;
             key-positions = <13 16>;
             bindings = <&kp SPACE>;
             layers = <BASE>;
@@ -169,8 +197,10 @@
 
         nav {
             label = "NAV";
-//  Space halten. Miryoku-artiger Editier-/Navigationslayer.
-//  Links: Esc/CapsW/Caps. Rechts: Clipboard, Pfeile, Home/End/Page.
+//  Space halten.
+//  Miryoku-artiger Editier-/Navigationslayer.
+//  Links: Esc / CapsW / Caps.
+//  Rechts: Redo / Paste / Copy / Cut / Undo, Pfeile, Home/End/Page.
             bindings = <
                 &kp ESC        &none          &none          &none          &caps_word        &kp LC(Y)      &kp LC(V)      &kp LC(C)      &kp LC(X)      &kp LC(Z)
                 &none          &none          &none          &none          &kp CAPS          &kp MINUS      &kp LEFT       &kp DOWN       &kp UP         &kp RIGHT
@@ -182,7 +212,8 @@
 
         num {
             label = "NUM";
-//  Delete halten. Zahlen rechts, 0 auf Enter.
+//  Delete halten.
+//  Zahlen rechts, 0 auf Enter.
             bindings = <
                 &kp SQT        &kp LBKT       &kp MINUS      &kp RA(Q)      &kp RA(E)         &kp LS(RBKT)   &kp N7         &kp N8         &kp N9         &kp LS(N7)
                 &kp LS(N1)     &kp LS(N2)     &kp LS(N3)     &kp LS(N4)     &kp LS(N5)        &kp RBKT       &kp N4         &kp N5         &kp N6         &kp SLASH
@@ -194,8 +225,11 @@
 
         code {
             label = "CODE";
-//  Enter halten. Klammern/Symbole für Entwicklung.
-//  Auf diesem Layer: Delete-Thumb = (, Space-Thumb = )
+//  Enter halten.
+//  Klammern/Symbole für Entwicklung.
+//  Auf diesem Layer:
+//  Delete-Thumb = (
+//  Space-Thumb  = )
             bindings = <
                 &kp RA(N8)     &kp RA(N9)     &kp RA(N7)     &kp RA(N0)     &kp LS(N0)       &kp LS(SLASH)  &kp LS(DOT)    &kp LS(MINUS)  &kp LS(N1)     &kp LS(N6)
                 &kp LS(N8)     &kp LS(N9)     &kp NUBS       &kp LS(NUBS)   &kp LS(COMMA)    &kp BSLH       &kp LS(N4)     &kp LS(N5)     &kp RA(Q)      &kp RA(NUBS)
@@ -207,7 +241,8 @@
 
         fun_media {
             label = "FUN";
-//  Bspc halten. F-Tasten, Media, Bluetooth/USB.
+//  Bspc halten.
+//  F-Tasten, Media, Bluetooth/USB.
             bindings = <
                 &kp ESC        &kp F1         &kp F2         &kp F3         &kp F4            &kp C_PREV      &kp C_PP        &kp C_NEXT      &kp C_VOL_UP    &kp C_MUTE
                 &kp TAB        &kp F5         &kp F6         &kp F7         &kp F8            &kp C_VOL_DN    &kp C_STOP      &none           &kp C_BRI_UP    &kp C_BRI_DN
