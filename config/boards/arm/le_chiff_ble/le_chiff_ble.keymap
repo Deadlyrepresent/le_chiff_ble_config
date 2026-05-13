@@ -1,5 +1,5 @@
 /*
- * Le Chiffre BLE (MangoIV) – Michel QWERTZ Developer Layout v1.6
+ * Le Chiffre BLE (MangoIV) – Michel QWERTZ Developer Layout v1.7
  *
  * Annahme: Betriebssystem steht auf Deutsch/QWERTZ.
  */
@@ -36,8 +36,6 @@
     behaviors {
         /*
          * Shift + Backspace = Delete.
-         *
-         * Wird über Bspc/FUN genutzt.
          */
         bspc_del: backspace_delete {
             compatible = "zmk,behavior-mod-morph";
@@ -50,8 +48,7 @@
          * Delete / NUM:
          * Tap  = Delete
          * Hold = NUM
-         *
-         * Delete tippen, direkt nochmal halten = mehrfach Delete.
+         * Tap, dann nochmal halten = mehrfach Delete.
          */
         num_del: num_delete {
             compatible = "zmk,behavior-hold-tap";
@@ -86,7 +83,7 @@
          * S = ALT
          * D = CTRL
          *
-         * F bekommt eigenes Shift-Verhalten weiter unten.
+         * F bekommt eigenes Shift-Verhalten.
          */
         hml: home_row_mod_left {
             compatible = "zmk,behavior-hold-tap";
@@ -107,7 +104,7 @@
          * L = ALTGR
          * Ö = GUI
          *
-         * J bekommt eigenes Shift-Verhalten weiter unten.
+         * J bekommt eigenes Shift-Verhalten.
          */
         hmr: home_row_mod_right {
             compatible = "zmk,behavior-hold-tap";
@@ -126,8 +123,6 @@
          *
          * F = Buchstabe
          * F halten = Shift
-         *
-         * hold-preferred, damit schnelles Großschreiben zuverlässiger wird.
          */
         hml_shift: home_row_shift_left {
             compatible = "zmk,behavior-hold-tap";
@@ -145,8 +140,6 @@
          *
          * J = Buchstabe
          * J halten = Shift
-         *
-         * hold-preferred, damit schnelles Großschreiben zuverlässiger wird.
          */
         hmr_shift: home_row_shift_right {
             compatible = "zmk,behavior-hold-tap";
@@ -162,11 +155,6 @@
         /*
          * Makro:
          * Schreibt () und setzt den Cursor in die Mitte.
-         *
-         * Auf deutschem QWERTZ:
-         * Shift+8 = (
-         * Shift+9 = )
-         * Left    = Cursor zwischen die Klammern
          */
         parens: parens_with_cursor_inside {
             compatible = "zmk,behavior-macro";
@@ -179,9 +167,6 @@
         /*
          * Makro:
          * Schreibt {} und setzt den Cursor in die Mitte.
-         *
-         * AltGr+7 = {
-         * AltGr+0 = }
          */
         braces: braces_with_cursor_inside {
             compatible = "zmk,behavior-macro";
@@ -194,9 +179,6 @@
         /*
          * Makro:
          * Schreibt [] und setzt den Cursor in die Mitte.
-         *
-         * AltGr+8 = [
-         * AltGr+9 = ]
          */
         brackets: brackets_with_cursor_inside {
             compatible = "zmk,behavior-macro";
@@ -209,8 +191,6 @@
         /*
          * Makro:
          * Schreibt "" und setzt den Cursor in die Mitte.
-         *
-         * Shift+2 = "
          */
         quotes: quotes_with_cursor_inside {
             compatible = "zmk,behavior-macro";
@@ -225,12 +205,22 @@
         compatible = "zmk,combos";
 
         /*
-         * Delete + Enter = Tab
+         * Delete + linkes Space = Tab
          */
         combo_tab {
             timeout-ms = <60>;
             key-positions = <31 32>;
             bindings = <&kp TAB>;
+            layers = <BASE>;
+        };
+
+        /*
+         * linkes Space + rechtes Space = Enter
+         */
+        combo_enter {
+            timeout-ms = <60>;
+            key-positions = <32 33>;
+            bindings = <&kp RET>;
             layers = <BASE>;
         };
 
@@ -307,19 +297,19 @@
 // /  Q  |  W  |  E  |  R  |  T   \     /  Z  |  U  |  I  |  O  |  P   \
 // |Gui/A|Alt/S|Ctl/D|Sft/F|  G   |     |  H  |Sft/J|Ctl/K|AltGr/L|Gui/Ö|
 // |  Y  |  X  |  C  |  V  |  B   |     |  N  |  M  |  ,  |  .  |  -   |
-//         \ Delete/NUM | Enter/NAV /     \ Space/CODE | Bspc/FUN /
+//         \ Delete/NUM | Space/NAV /     \ Space/CODE | Bspc/FUN /
             bindings = <
                 &kp Q              &kp W          &kp E          &kp R          &kp T              &kp Y              &kp U          &kp I          &kp O          &kp P
                 &hml LGUI A        &hml LALT S    &hml LCTRL D   &hml_shift LSHFT F &kp G           &kp H              &hmr_shift RSHFT J &hmr RCTRL K   &hmr RALT L    &hmr RGUI SEMI
                 &kp Z              &kp X          &kp C          &kp V          &kp B   &none      &kp N              &kp M          &kp COMMA      &kp DOT        &kp SLASH
-                                    &num_del NUM DEL   &lt NAV RET                   &lt CODE SPACE      &fun_bspc FUN 0
+                                    &num_del NUM DEL   &lt NAV SPACE                 &lt CODE SPACE      &fun_bspc FUN 0
             >;
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP>;
         };
 
         nav {
             label = "NAV";
-//  Enter halten.
+//  Linkes Space halten.
 //  Miryoku-artiger Editier-/Navigationslayer.
 //
 //  Links:
@@ -345,7 +335,7 @@
         num {
             label = "NUM";
 //  Delete halten.
-//  Zahlen rechts, 0 auf Space/CODE-Thumb.
+//  Zahlen rechts, 0 auf rechtem Space/CODE-Thumb.
 //
 //  Links:
 //  € $ % § ~
@@ -367,7 +357,7 @@
 
         code {
             label = "CODE";
-//  Space halten.
+//  Rechtes Space halten.
 //  Entwickler-Symbole nach deiner gewünschten Anordnung.
 //
 //  Links:
@@ -382,7 +372,7 @@
 //
 //  Auf diesem Layer:
 //  Delete-Thumb = Makro: () mit Cursor innen
-//  Enter-Thumb  = )
+//  Linkes Space = )
 //
 //  CODE-Combos:
 //  A+S = {} mit Cursor innen
